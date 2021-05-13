@@ -6,6 +6,8 @@ import re
 url ="https://books.toscrape.com/catalogue/category/books_1/index.html"
 reponse = requests.get(url)
 
+
+# scrapping de chaque categories ainsi que toutes leurs pages
 if reponse.ok:
     soup = BeautifulSoup(reponse.text, 'lxml')
     links = {}
@@ -22,15 +24,40 @@ if reponse.ok:
         linkV = link[2:]
         links[categories] = "https://books.toscrape.com/catalogue/category" + linkV
 
+
+# fonction qui demande a utilisateur de choisir une ou toutes les catégorie
 def demandeDeCategories():
     print(choixCategory)
     print("")
-    print(input("choisit ta categories parmit la listes si dessus : " ))
+    choix = input("choisit ta categories parmit la listes si dessus : " )
+    choixstr = str(choix)
+    choixstr.lower()
+    categorie = choixstr.capitalize()
+    if categorie == "":
+        print("Erreur !")
+        print("Vous devez choisir une catégorie ou écrire Books pour tout sélectioner.")
+        return demandeDeCategories()
+    elif categorie in links:
+        liens = links.get(categorie)
+        if categorie == "Books":
+            pass
+        else:
+            return liens, categorie
+    else:
+        print("Erreur !")
+        print("Vous devez choisir une catégorie ou écrire Books pour tout sélectioner.")
+        return demandeDeCategories()
 
-demandeDeCategories()
-'''
+
+retourFonction = demandeDeCategories()
+newUrls = retourFonction[0]
+retourCategorie = retourFonction[1]
+
+response = requests.get(newUrls)
+
+# fonction permettant de scrapper la totalité des livres d'une catégorie
 if reponse.ok:
-    soup = BeautifulSoup(reponse.text, 'lxml')
+    soup = BeautifulSoup(response.text, 'lxml')
     links = []
     liste = soup.findAll('li', {'class': 'col-xs-6 col-sm-4 col-md-3 col-lg-3'})
     nomberBooks = soup.find('form', {'class': 'form-horizontal'}).find('strong').text
@@ -66,6 +93,12 @@ if reponse.ok:
             link = y[:-4]
             links.append('https://books.toscrape.com/catalogue' + link + '.html')
         print('il y a : ' + str(len(links)) + ' livres dans cette catégorie.')
-'''
+
+
+with codecs.open('scrappingBooks.csv', 'w', encoding='utf-8')as csvfile:
+    col = retourCategorie
+    csvfile.write(col)
+    csvfile.write(links)
+
 
 
