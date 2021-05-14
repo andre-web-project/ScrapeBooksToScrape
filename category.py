@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 import codecs
 import re
 
+# creation de url de base avec ca requette sur la page home du site
 url ="https://books.toscrape.com/catalogue/category/books_1/index.html"
 reponse = requests.get(url)
 
@@ -32,28 +33,26 @@ def demandeDeCategories():
     choix = input("choisit ta categories parmit la listes si dessus : " )
     choixstr = str(choix)
     choixstr.lower()
-    categorie = choixstr.capitalize()
+    categorie = choixstr.title()
     if categorie == "":
         print("Erreur !")
         print("Vous devez choisir une catégorie ou écrire Books pour tout sélectioner.")
         return demandeDeCategories()
     elif categorie in links:
         liens = links.get(categorie)
-        if categorie == "Books":
-            pass
-        else:
-            return liens, categorie
+        return liens, categorie
     else:
         print("Erreur !")
         print("Vous devez choisir une catégorie ou écrire Books pour tout sélectioner.")
         return demandeDeCategories()
 
 
+# variable de recuperation de valeurs necessaires pour les autres fonction
 retourFonction = demandeDeCategories()
 newUrls = retourFonction[0]
 retourCategorie = retourFonction[1]
-
 response = requests.get(newUrls)
+
 
 # fonction permettant de scrapper la totalité des livres d'une catégorie
 if reponse.ok:
@@ -84,6 +83,7 @@ if reponse.ok:
             link = y[:-4]
             links.append('https://books.toscrape.com/catalogue' + link + '.html')
         print('il y a : ' + str(len(links)) + ' livres dans cette catégorie.')
+        print('Un fichier csv avec ces données à etait générer')
     else:
         for li in liste:
             a = li.find('a')
@@ -93,12 +93,23 @@ if reponse.ok:
             link = y[:-4]
             links.append('https://books.toscrape.com/catalogue' + link + '.html')
         print('il y a : ' + str(len(links)) + ' livres dans cette catégorie.')
+        print('Un fichier csv avec ces données à etait générer')
 
 
-with codecs.open('scrappingBooks.csv', 'w', encoding='utf-8')as csvfile:
-    col = retourCategorie
-    csvfile.write(col)
-    csvfile.write(links)
+# ligne necessaires pour la mise en page du fichier csv
+entetes = [
+    u'categorie',
+    u'liens du livre'
+]
+ligneEntete = ';'.join(entetes) + '\n'
+
+
+# code pour l'extraction du fichier csv de la categorie demander
+with codecs.open('scrappingCategories' + retourCategorie + '.csv', 'w', encoding='utf-8') as file:
+    file.write(ligneEntete)
+    for row in links:
+        ligne = retourCategorie+ ';' + row + '\n'
+        file.write(ligne)
 
 
 

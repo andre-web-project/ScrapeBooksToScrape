@@ -12,10 +12,10 @@ if reponse.ok:
     tds = soup.findAll('td')
 
     title = soup.find("h1").text
-    price_including_tax = tds[3].text
-    print("price_including_tax", price_including_tax)
-    price_excluding_tax = tds[2].text
-    print("price_excoding", price_excluding_tax)
+    price_including_taxs = tds[3].text
+    price_including_tax = price_including_taxs[1:]
+    price_excluding_taxs = tds[2].text
+    price_excluding_tax = price_excluding_taxs[1:]
     number_available = tds[5].text
     product_description = tds[1].text
     category = soup.findAll('a')[3].text
@@ -43,8 +43,8 @@ valeurs = [
     image_url
 ]
 ligneEntete = ';'.join(entetes) + '\n'
-ligne = ";".join(valeurs) + "\n"
+ligne = ";".join(valeurs) + "\n\n"
 
 with codecs.open('scrappingBooks.csv', 'w', encoding='utf-8') as file:
     file.write(ligneEntete)
-    file.write(ligne)
+
