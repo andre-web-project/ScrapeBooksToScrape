@@ -11,7 +11,7 @@ reponse = requests.get(url)
 
 # scrapping de chaque categories ainsi que toutes leurs pages
 if reponse.ok:
-    soup = BeautifulSoup(reponse.text, 'lxml')
+    soup = BeautifulSoup(reponse.text, "html.parser")
     links = {}
     choixCategory = []
     liste = soup.find('ul', {'class': 'nav nav-list'})

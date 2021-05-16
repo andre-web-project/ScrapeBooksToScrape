@@ -9,7 +9,7 @@ link = []
 links = []
 
 if reponse.ok:
-    soup = BeautifulSoup(reponse.text, "lxml")
+    soup = BeautifulSoup(reponse.text,"html.parser")
     page = soup.find('li', {'class': 'next'}).find('a')
     nombrePage = soup.find('li', {'class': 'current'}).text
     pageSansEspace = nombrePage.strip()

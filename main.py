@@ -14,7 +14,7 @@ def rechercheInfosBook():
         urls = url
         reponse = requests.get(urls)
         if reponse.ok:
-            soup = BeautifulSoup(reponse.text, "lxml")
+            soup = BeautifulSoup(reponse.text, "html.parser")
             tds = soup.findAll('td')
             title = soup.find("h1").text
             price_including_taxs = tds[3].text
