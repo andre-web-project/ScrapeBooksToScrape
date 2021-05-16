@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 import codecs
 import os
 from category import scrappingSelectionDemander
+import urllib.request as ulib
 
 
 # creation fonction recherchant les details du livre demandé
@@ -34,9 +35,17 @@ def rechercheInfosBook():
     return valeurs
 
 
+# creation fonction de requette de url des images
+def get_html(source):
+    with ulib.urlopen(source) as u:
+        return u.read()
+
+
 def impressionDuDetails():
     valeurs = rechercheInfosBook()
     images = []
+    tout = valeurs[1]
+    categ = tout[5]
     for i in valeurs:
         image = i[-1]
         images.append(image)
@@ -57,23 +66,25 @@ def impressionDuDetails():
     if validation == "oui":
         print("Le fichier csv a était généré.")
         print("")
-        if not os.path.exists("imagesCouv"):
-            os.makedirs("imagesCouv")
-            for img in images:
-                nom = img.split("/")[-1]
-                dest = os.path.join("imagesCouv", nom)
-                contenu = i
-                if os.path.exists(dest):
-                    pass
-                else:
-                    with open(str(dest), "wb") as f:
-                        f.write(contenu)
-        with codecs.open('scrappingBooks.csv', 'w', encoding='utf-8') as file:
+        if not os.path.exists("imagesCouv" + categ):
+            os.makedirs("imagesCouv" + categ)
+        for i, img in enumerate(images):
+            nom = img.split("/")[-1]
+            dest = os.path.join("imagesCouv"+ categ, nom)
+            if os.path.exists(dest):
+                continue
+            try:
+                contenu = get_html(img)
+            except Exception as e:
+                continue
+            with open(dest, "wb") as f:
+                f.write(contenu)
+        print("Les images ont etait enregistrées .")
+        with codecs.open('scrappingBooks' + categ + '.csv', 'w', encoding='utf-8') as file:
             file.write(ligneEntete)
             for row in valeurs:
                 ligne = ';'.join(row) + '\n'
                 file.write(ligne)
-
     else:
         print("Fin de la recherche.")
         print("")
