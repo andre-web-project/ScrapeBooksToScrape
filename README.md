@@ -5,7 +5,6 @@ L'application ,en plus de ce fichier README, ce compose de:
 			     - 4 scripts python.
 			     - 1 fichier requirements.txt ( ressources pip nécessaires a installer dans votre environement virtuel ). 
 			     - 1 fichier .gitignore ( sert a exclure les fichiers csv générés ).
-			     - 2 dossiers de ressources pour python et git.
 
 Etape 1 :
 	Mise en place de votre environement virtuel.

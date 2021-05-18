@@ -63,7 +63,7 @@ def scrappingSelectionDemander():
         links = []
     # rajout de la fonction Books pour recuperer la totalité de livres----------
         if retourCategorie == 'Books':
-            soup = BeautifulSoup(reponse.text, "lxml")
+            soup = BeautifulSoup(reponse.text, "html.parser")
             page = soup.find('li', {'class': 'next'}).find('a')
             nombrePage = soup.find('li', {'class': 'current'}).text
             pageSansEspace = nombrePage.strip()
@@ -77,14 +77,14 @@ def scrappingSelectionDemander():
             for i in range(pageTotal):
                 newUrl = "https://books.toscrape.com/catalogue/category/books_1/" + urlPageNext
                 newResponse = requests.get(newUrl)
-                soups = BeautifulSoup(newResponse.text, "lxml")
+                soups = BeautifulSoup(newResponse.text, "html.parser")
                 pages = soups.find('li', {'class': 'next'}).find('a')
                 urlPageNext = pages['href']
                 newUrl = "https://books.toscrape.com/catalogue/category/books_1/" + urlPageNext
                 books.append(newUrl)
             for l in books:
                 r = requests.get(l)
-                s = BeautifulSoup(r.text, "lxml")
+                s = BeautifulSoup(r.text, "html.parser")
                 liste = s.findAll('li', {'class': 'col-xs-6 col-sm-4 col-md-3 col-lg-3'})
                 for li in liste:
                     a2 = li.find('a')
@@ -98,7 +98,7 @@ def scrappingSelectionDemander():
             print('Un fichier csv avec ces données à etait générer')
     # fin du rajout de code ---------------------------------------------------------------
         else:
-            soup = BeautifulSoup(response.text, 'lxml')
+            soup = BeautifulSoup(response.text, 'html.parser')
             liste = soup.findAll('li', {'class': 'col-xs-6 col-sm-4 col-md-3 col-lg-3'})
             nomberBooks = soup.find('form', {'class': 'form-horizontal'}).find('strong').text
             if int(nomberBooks) > 20:
@@ -122,7 +122,7 @@ def scrappingSelectionDemander():
                 for i in range(pageTotal):
                     newUrl = newUrl2 + urlPageNext
                     newResponse = requests.get(newUrl)
-                    soups = BeautifulSoup(newResponse.text, "lxml")
+                    soups = BeautifulSoup(newResponse.text, "html.parser")
                     pages = soups.find('li', {'class': 'next'}).find('a')
                     urlPageNext = pages['href']
                     newUrl = newUrl2 + urlPageNext
