@@ -30,7 +30,7 @@ if reponse.ok:
 
 
 # fonction qui demande a utilisateur de choisir une ou toutes les catégorie prend en charge des cas d'erreurs
-def demandeDeCategories():
+def demande_de_categories():
     print("")
     print(choixCategory)
     print("")
@@ -41,20 +41,20 @@ def demandeDeCategories():
     if categorie == "":
         print("Erreur !")
         print("Vous devez choisir une catégorie ou écrire Books pour tout sélectionner.")
-        return demandeDeCategories()
+        return demande_de_categories()
     elif categorie in links:
         liens = links.get(categorie)
         return liens, categorie
     else:
         print("Erreur !")
         print("Vous devez choisir une catégorie ou écrire Books pour tout sélectionner.")
-        return demandeDeCategories()
+        return demande_de_categories()
 
 
 # creation fonction scrapper selection
-def scrappingSelectionDemander():
+def scrapping_selection_demander():
     # variable de recuperation des valeurs necessaires pour la suite du code
-    retourFonction = demandeDeCategories()
+    retourFonction = demande_de_categories()
     newUrls = retourFonction[0]
     retourCategorie = retourFonction[1]
     response = requests.get(newUrls)
@@ -107,7 +107,7 @@ def scrappingSelectionDemander():
                 pageNext = url[:-10]
                 liens = (pageNext + pages2)
                 reponses = requests.get(liens)
-                soups = BeautifulSoup(reponses.text, 'lxml')
+                soups = BeautifulSoup(reponses.text, 'html.parser')
             # rajout du code pageNext -------------------------------------------
                 page = soup.find('li', {'class': 'next'}).find('a')
                 nombrePage = soup.find('li', {'class': 'current'}).text
@@ -129,7 +129,7 @@ def scrappingSelectionDemander():
                     link.append(newUrl)
                 for l in link:
                     r = requests.get(l)
-                    s = BeautifulSoup(r.text, "lxml")
+                    s = BeautifulSoup(r.text, "html.parser")
                     liste1 = s.findAll('li', {'class': 'col-xs-6 col-sm-4 col-md-3 col-lg-3'})
                     for li in liste1:
                         a2 = li.find('a')
@@ -142,7 +142,7 @@ def scrappingSelectionDemander():
                 print("")
                 print('il y a : ' + str(len(links)) + ' livres dans la selection: '+ retourCategorie)
                 print('Un fichier csv avec ces données à etait générer')
-            else:
+            elif 0 < int(nomberBooks) < 20:
                 for li in liste:
                     a = li.find('a')
                     x = a["href"]
@@ -153,6 +153,9 @@ def scrappingSelectionDemander():
                 print("")
                 print('il y a : ' + str(len(links)) + ' livres dans la selection: '+ retourCategorie)
                 print('Un fichier csv avec ces données à etait générer')
+            else:
+                print("il n'y a pas de livres dans cette selection .")
+
     # ligne necessaires pour la mise en page du fichier csv
     entetes = [
         u'Categorie',

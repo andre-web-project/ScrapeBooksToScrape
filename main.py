@@ -2,13 +2,13 @@ import requests
 from bs4 import BeautifulSoup
 import codecs
 import os
-from category import scrappingSelectionDemander
+from category import scrapping_selection_demander
 import urllib.request as ulib
 
 
 # creation fonction recherchant les details du livre demandé
-def rechercheInfosBook():
-    links = scrappingSelectionDemander()
+def recherche_infos_book():
+    links = scrapping_selection_demander()
     valeurs = []
     for url in links:
         urls = url
@@ -41,10 +41,11 @@ def get_html(source):
         return u.read()
 
 
-def impressionDuDetails():
-    valeurs = rechercheInfosBook()
+def impression_du_details():
+    valeurs = recherche_infos_book()
     images = []
-    tout = valeurs[1]
+    # recuperation de la valeur categorie dans la liste 'valeurs' afin d'agrémenté les dossiers et fichiers créé
+    tout = valeurs[0]
     categ = tout[5]
     for i in valeurs:
         image = i[-1]
@@ -90,4 +91,4 @@ def impressionDuDetails():
         print("")
 
 
-impressionDuDetails()
+impression_du_details()
