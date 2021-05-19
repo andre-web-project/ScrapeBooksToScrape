@@ -29,7 +29,7 @@ Etape 3 :
 	L'application est prête vous pouvez la lancer en tapant :
 								  python main.py
 
-	- L'application vous demandera de selectionner une catégorie afin de recuperer l'ensemble ces données dans la librairie.
-	- L'application générera un fichier csv avec tout les livres de la selection.
-	- Ensuite elle vous demandera si vous voulez extraire des données plus detaillées ainsi que les images de couverture.
+	- Et vous arriverez sur le menu de m'application.
 
+
+	BONNE RECHERCHE !!

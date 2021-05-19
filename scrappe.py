@@ -1,36 +1,59 @@
 import requests
 from bs4 import BeautifulSoup
-import codecs
 import re
 
 
-# creation de url de base avec ca requette sur la page home du site
-url ="https://books.toscrape.com/catalogue/category/books_1/index.html"
-reponse = requests.get(url)
+# fonction de recherche des elements demander pour chaque livres
+def recherche_infos_book(links):
+    valeurs = []
+    for url in links:
+        urls = url
+        reponse = requests.get(urls)
+        if reponse.ok:
+            soup = BeautifulSoup(reponse.text, "html.parser")
+            tds = soup.findAll('td')
+            ps = soup.findAll("p")
+            title = soup.find("h1").text
+            price_including_taxs = tds[3].text
+            price_including_tax = price_including_taxs[1:]
+            price_excluding_taxs = tds[2].text
+            price_excluding_tax = price_excluding_taxs[1:]
+            number_available = tds[5].text
+            product_description = ps[3].text
+            product_description = product_description.replace(";", ",")
+            category = soup.findAll('a')[3].text
+            review_rating = soup.find('p', class_='star-rating')['class'][1].lower()
+            liens = soup.find('img')['src']
+            liensImage = "https://books.toscrape.com/" + liens[6:]
+            image_url = liensImage
+            valeur = [title, price_including_tax, price_excluding_tax, number_available, product_description, category, review_rating, image_url]
+            valeurs.append(valeur)
+    return valeurs
 
 
-# scrapping de chaque categories ainsi que toutes leurs pages
-if reponse.ok:
-    soup = BeautifulSoup(reponse.text, "html.parser")
-    links = {}
-    choixCategory = []
-    liste = soup.find('ul', {'class': 'nav nav-list'})
-    listes = liste.findAll('li')
-    for li in listes:
-        a = li.find('a')
-        category = a.text
-        category = re.sub('[\n]', '', category)
-        categorySansEspace = category.strip()
-        categoriesSansMajuscule = categorySansEspace.upper()
-        categorySansEspace = categoriesSansMajuscule.capitalize()
-        choixCategory.append(categorySansEspace)
-        link = a['href']
-        linkV = link[2:]
-        links[categorySansEspace] = "https://books.toscrape.com/catalogue/category" + linkV
-
-
-# fonction qui demande a utilisateur de choisir une ou toutes les catégorie prend en charge des cas d'erreurs
-def demande_de_categories():
+# fonction de scrapping des noms et liens de chaque categories
+def choix_categorie():
+    # creation de url de base avec ca requette sur la page home du site
+    url = "https://books.toscrape.com/catalogue/category/books_1/index.html"
+    reponse = requests.get(url)
+    # scrapping de chaque categories ainsi que toutes leurs pages
+    if reponse.ok:
+        soup = BeautifulSoup(reponse.text, "html.parser")
+        links = {}
+        choixCategory = []
+        liste = soup.find('ul', {'class': 'nav nav-list'})
+        listes = liste.findAll('li')
+        for li in listes:
+            a = li.find('a')
+            category = a.text
+            category = re.sub('[\n]', '', category)
+            categorySansEspace = category.strip()
+            categoriesSansMajuscule = categorySansEspace.upper()
+            categorySansEspace = categoriesSansMajuscule.capitalize()
+            choixCategory.append(categorySansEspace)
+            link = a['href']
+            linkV = link[2:]
+            links[categorySansEspace] = "https://books.toscrape.com/catalogue/category" + linkV
     print("")
     print(choixCategory)
     print("")
@@ -41,24 +64,25 @@ def demande_de_categories():
     if categorie == "":
         print("Erreur !")
         print("Vous devez choisir une catégorie ou écrire Books pour tout sélectionner.")
-        return demande_de_categories()
+        return choix_categorie()
     elif categorie in links:
         liens = links.get(categorie)
         return liens, categorie
     else:
         print("Erreur !")
         print("Vous devez choisir une catégorie ou écrire Books pour tout sélectionner.")
-        return demande_de_categories()
+        return choix_categorie()
 
 
-# creation fonction scrapper selection
-def scrapping_selection_demander():
+# fonction de scrapping de livre de la selection demander gere aussi le pagging
+def recherche_categorie(liens, cat):
+    # url de base
+    url = "https://books.toscrape.com/catalogue/category/books_1/index.html"
     # variable de recuperation des valeurs necessaires pour la suite du code
-    retourFonction = demande_de_categories()
-    newUrls = retourFonction[0]
-    retourCategorie = retourFonction[1]
+    reponse = requests.get(url)
+    newUrls = liens
+    retourCategorie = cat
     response = requests.get(newUrls)
-    # fonction permettant de scrapper la totalité des livres de la selection demandée
     if reponse.ok:
         links = []
     # rajout de la fonction Books pour recuperer la totalité de livres----------
@@ -95,7 +119,6 @@ def scrapping_selection_demander():
                     links.append('https://books.toscrape.com/catalogue/' + link2 + '.html')
             print("")
             print('il y a : ' + str(len(links)) + ' livres au total sur le site.')
-            print('Un fichier csv avec ces données à etait générer')
     # fin du rajout de code ---------------------------------------------------------------
         else:
             soup = BeautifulSoup(response.text, 'html.parser')
@@ -141,8 +164,7 @@ def scrapping_selection_demander():
                 # fin du code rajouter ---------------------------------------------------------
                 print("")
                 print('il y a : ' + str(len(links)) + ' livres dans la selection: '+ retourCategorie)
-                print('Un fichier csv avec ces données à etait générer')
-            elif 0 < int(nomberBooks) < 20:
+            else:
                 for li in liste:
                     a = li.find('a')
                     x = a["href"]
@@ -152,20 +174,6 @@ def scrapping_selection_demander():
                     links.append('https://books.toscrape.com/catalogue' + link + '.html')
                 print("")
                 print('il y a : ' + str(len(links)) + ' livres dans la selection: '+ retourCategorie)
-                print('Un fichier csv avec ces données à etait générer')
-            else:
-                print("il n'y a pas de livres dans cette selection .")
-
-    # ligne necessaires pour la mise en page du fichier csv
-    entetes = [
-        u'Categorie',
-        u'Liens',
-    ]
-    ligneEntete = ";".join(entetes) + "\n"
-    # code pour l'extraction du fichier csv de la selection demandé
-    with codecs.open('scrappingCategories' + retourCategorie + '.csv', 'w', encoding='utf-8') as file:
-        file.write(ligneEntete)
-        for row in links:
-            ligne = retourCategorie + ';' + row + '\n'
-            file.write(ligne)
     return links
+
+

@@ -1,94 +1,58 @@
-import requests
-from bs4 import BeautifulSoup
-import codecs
-import os
-from category import scrapping_selection_demander
-import urllib.request as ulib
+from scrappe import recherche_infos_book, recherche_categorie, choix_categorie
+from extractionCsv import impression_du_details
+from enregistrementPic import enregistrement_des_images
 
 
-# creation fonction recherchant les details du livre demandé
-def recherche_infos_book():
-    links = scrapping_selection_demander()
-    valeurs = []
-    for url in links:
-        urls = url
-        reponse = requests.get(urls)
-        if reponse.ok:
-            soup = BeautifulSoup(reponse.text, "html.parser")
-            tds = soup.findAll('td')
-            title = soup.find("h1").text
-            price_including_taxs = tds[3].text
-            price_including_tax = price_including_taxs[1:]
-            price_excluding_taxs = tds[2].text
-            price_excluding_tax = price_excluding_taxs[1:]
-            number_available = tds[5].text
-            product_description = tds[1].text
-            category = soup.findAll('a')[3].text
-            review_rating = soup.find('p', class_='star-rating')['class'][1].lower()
-            liens = soup.find('img')['src']
-            liensImage = "https://books.toscrape.com/" + liens[6:]
-            image_url = liensImage
-            valeur = [title, price_including_tax, price_excluding_tax, number_available, product_description, category, review_rating, image_url]
-            valeurs.append(valeur)
+# fonction menu pour l'accueil de l'application et la gestion des choix
+def menu_accueil():
     print("")
-    print("Les données des livres de la selection ont etait récuperer ainsi que les images de couvertures.")
-    return valeurs
-
-
-# creation fonction de requette de url des images
-def get_html(source):
-    with ulib.urlopen(source) as u:
-        return u.read()
-
-
-def impression_du_details():
-    valeurs = recherche_infos_book()
-    images = []
-    # recuperation de la valeur categorie dans la liste 'valeurs' afin d'agrémenté les dossiers et fichiers créé
-    tout = valeurs[0]
-    categ = tout[5]
-    for i in valeurs:
-        image = i[-1]
-        images.append(image)
-    entre = input('Voulez creer un fichier avec ces données et enregistrer les images ? ')
-    validation = entre.lower()
-    entetes = [
-        u'Title',
-        u'price including tax',
-        u'price excluding tax',
-        u'number available',
-        u'product description',
-        u'category',
-        u'review rating',
-        u'image url'
-    ]
-    ligneEntete = ';'.join(entetes) + '\n'
-    # creation du dossier pour accueillir les images
-    if validation == "oui":
-        print("Le fichier csv a était généré.")
+    print("Bienvenue sur votre application de veille marketing du site Books to scrape.")
+    print("")
+    print("Tapez 1 : pour extraire toutes les informations d'un livre en retrant son url.")
+    print("Tapez 2 : pour extraire tous les liens et informations des livres d'une catégorie choisit.")
+    print("Tapez 3 : pour extraire la totalité des informations du sites")
+    print("Tapez 4 : pour enregistrer les images de livres.")
+    print("Tapez 5 : pour fermer l'application.")
+    choix = input(":  ")
+    # 1 choix url en console > srapping des infos > fichier csv
+    if choix == "1":
+        print("Veuillez saisir une url valide ")
+        url = [input(": ")]
+        valeurs = recherche_infos_book(url)
+        print("les données du livre ont étaient recuperées avec succés.")
+        impression_du_details(valeurs)
+    # 2 choix affichage des categories puis choix en console > scrapping des infos > fichier csv des liens des livres > fichier csv des informations
+    elif choix == "2":
+        retour = choix_categorie()
+        liens = retour[0]
+        categorie = retour[1]
+        valeurs = recherche_categorie(liens, categorie)
+        details = recherche_infos_book(valeurs)
+        impression_du_details(details)
+    #  choix  > scrapping de toutes les infos > fichier csv  des liens > fichier csv des informations
+    elif choix == "3":
+        liens = "https://books.toscrape.com/catalogue/category/books_1/index.html"
+        categorie = "Books"
+        valeurs = recherche_categorie(liens, categorie)
+        details = recherche_infos_book(valeurs)
+        impression_du_details(details)
+    #  choix  > affichage des categories puis choix en console > creation d'un dossier et enregistrement des images
+    elif choix == "4":
+        retour = choix_categorie()
+        liens = retour[0]
+        categorie = retour[1]
+        valeurs = recherche_categorie(liens, categorie)
+        details = recherche_infos_book(valeurs)
+        impression_du_details(details)
+        enregistrement_des_images(details)
+    # sortie du proramme
+    elif choix == "5":
+        print("Fin de recherche.")
         print("")
-        if not os.path.exists("imagesCouv" + categ):
-            os.makedirs("imagesCouv" + categ)
-        for i, img in enumerate(images):
-            nom = img.split("/")[-1]
-            dest = os.path.join("imagesCouv"+ categ, nom)
-            if os.path.exists(dest):
-                continue
-            try:
-                contenu = get_html(img)
-            except Exception as e:
-                continue
-            with open(dest, "wb") as f:
-                f.write(contenu)
-        print("Les images ont etait enregistrées .")
-        with codecs.open('scrappingBooks' + categ + '.csv', 'w', encoding='utf-8') as file:
-            file.write(ligneEntete)
-            for row in valeurs:
-                ligne = ';'.join(row) + '\n'
-                file.write(ligne)
+    # gestion des cas d'erreurs
     else:
-        print("Fin de la recherche.")
-        print("")
+        print("Erreur ! vous devez selectionner un menu existant")
+        return menu_accueil()
 
 
-impression_du_details()
+menu_accueil()
