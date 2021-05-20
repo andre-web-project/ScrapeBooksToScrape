@@ -1,6 +1,8 @@
 import requests
 from bs4 import BeautifulSoup
 import re
+from enregistrementPic import enregistrement_des_images
+from extractionCsv import impression_du_details
 
 
 # fonction de recherche des elements demander pour chaque livres
@@ -32,7 +34,7 @@ def recherche_infos_book(links):
 
 
 # fonction de scrapping des noms et liens de chaque categories
-def choix_categorie():
+def scrappe_categorie():
     # creation de url de base avec ca requette sur la page home du site
     url = "https://books.toscrape.com/catalogue/category/books_1/index.html"
     reponse = requests.get(url)
@@ -54,6 +56,11 @@ def choix_categorie():
             link = a['href']
             linkV = link[2:]
             links[categorySansEspace] = "https://books.toscrape.com/catalogue/category" + linkV
+    return links, choixCategory
+
+
+# fonction menu de selection de category
+def selection_category(links, choixCategory):
     print("")
     print(choixCategory)
     print("")
@@ -64,14 +71,14 @@ def choix_categorie():
     if categorie == "":
         print("Erreur !")
         print("Vous devez choisir une catégorie ou écrire Books pour tout sélectionner.")
-        return choix_categorie()
+        return selection_category(links, choixCategory)
     elif categorie in links:
         liens = links.get(categorie)
         return liens, categorie
     else:
         print("Erreur !")
         print("Vous devez choisir une catégorie ou écrire Books pour tout sélectionner.")
-        return choix_categorie()
+        return selection_category(links, choixCategory)
 
 
 # fonction de scrapping de livre de la selection demander gere aussi le pagging
@@ -177,3 +184,25 @@ def recherche_categorie(liens, cat):
     return links
 
 
+# fonction de srappe de la totalite des images et extraites par categorie
+def recherche_totalite_images(links, category):
+    del links["Books"]
+    del category[0]
+    for i in links:
+        link = links.get(i)
+        categorie = i
+        retour = recherche_categorie(link, categorie)
+        details = recherche_infos_book(retour)
+        enregistrement_des_images(details)
+
+
+# fonction de gestion de srcappe de la totalité des livres et extraites par categorie
+def recherche_totalite_infos(links, category):
+    del links["Books"]
+    del category[0]
+    for i in links:
+        link = links.get(i)
+        categorie = i
+        retour = recherche_categorie(link, categorie)
+        details = recherche_infos_book(retour)
+        impression_du_details(details)

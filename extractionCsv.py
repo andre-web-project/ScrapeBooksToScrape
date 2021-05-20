@@ -33,10 +33,12 @@ def impression_du_details(valeur):
         print("Le fichier csv a était généré.")
         print("")
     else:
-        with codecs.open('scrappingBooks.csv', 'w', encoding='utf-8') as file:
-            file.write(ligneEntete)
-            for row in valeur:
-                ligne = ';'.join(row) + '\n'
-                file.write(ligne)
+        for i in valeur:
+            cat = i[5]
+            with codecs.open('scrappingBooks' + cat + '.csv', 'w', encoding='utf-8') as file:
+                file.write(ligneEntete)
+                for row in valeur:
+                    ligne = ';'.join(row) + '\n'
+                    file.write(ligne)
         print("Le fichier csv a était généré.")
         print("")
