@@ -8,7 +8,7 @@ def get_html(source):
         return u.read()
 
 
-# creation fonction pour l'impression du detail et l'enregistrement des images
+# creation fonction pour l'enregistrement des images
 def enregistrement_des_images(valeurs):
     images = []
     simple = valeurs[0]
@@ -16,7 +16,7 @@ def enregistrement_des_images(valeurs):
     for i in valeurs:
         image = i[-1]
         images.append(image)
-    # creation du dossier pour accueillir les images
+    # creation du dossier pour stocker les images
     if not os.path.exists("imagesCouv" + categ):
         os.makedirs("imagesCouv" + categ)
     for i, img in enumerate(images):
@@ -30,7 +30,7 @@ def enregistrement_des_images(valeurs):
                 continue
         with open(dest, "wb") as f:
             f.write(contenu)
-    print("Les images ont etaient enregistrées .")
+    print("Les images ont étaient enregistrées .")
     print("")
 
 

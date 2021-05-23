@@ -87,42 +87,42 @@ def recherche_categorie(liens, cat):
     url = "https://books.toscrape.com/catalogue/category/books_1/index.html"
     # variable de recuperation des valeurs necessaires pour la suite du code
     reponse = requests.get(url)
-    newUrls = liens
-    retourCategorie = cat
-    response = requests.get(newUrls)
+    newurls = liens
+    retourcategorie = cat
+    response = requests.get(newurls)
     if reponse.ok:
         links = []
     # rajout de la fonction Books pour recuperer la totalité de livres----------
-        if retourCategorie == 'Books':
+        if retourcategorie == 'Books':
             soup = BeautifulSoup(reponse.text, "html.parser")
             page = soup.find('li', {'class': 'next'}).find('a')
-            nombrePage = soup.find('li', {'class': 'current'}).text
-            pageSansEspace = nombrePage.strip()
-            totalPage = pageSansEspace[10:]
-            pageTotal = int(totalPage) - 2
-            urlPageNext = page['href']
+            nombrepage = soup.find('li', {'class': 'current'}).text
+            pagesansespace = nombrepage.strip()
+            totalpage = pagesansespace[10:]
+            pagetotal = int(totalpage) - 2
+            urlpagenext = page['href']
             books = []
-            newUrl = "https://books.toscrape.com/catalogue/category/books_1/" + urlPageNext
+            newurl = "https://books.toscrape.com/catalogue/category/books_1/" + urlpagenext
             books.append("https://books.toscrape.com/catalogue/category/books_1/index.html")
-            books.append(newUrl)
-            for i in range(pageTotal):
-                newUrl = "https://books.toscrape.com/catalogue/category/books_1/" + urlPageNext
-                newResponse = requests.get(newUrl)
-                soups = BeautifulSoup(newResponse.text, "html.parser")
+            books.append(newurl)
+            for i in range(pagetotal):
+                newurl = "https://books.toscrape.com/catalogue/category/books_1/" + urlpagenext
+                newresponse = requests.get(newurl)
+                soups = BeautifulSoup(newresponse.text, "html.parser")
                 pages = soups.find('li', {'class': 'next'}).find('a')
-                urlPageNext = pages['href']
-                newUrl = "https://books.toscrape.com/catalogue/category/books_1/" + urlPageNext
-                books.append(newUrl)
+                urlpagenext = pages['href']
+                newurl = "https://books.toscrape.com/catalogue/category/books_1/" + urlpagenext
+                books.append(newurl)
             for l in books:
                 r = requests.get(l)
                 s = BeautifulSoup(r.text, "html.parser")
                 liste = s.findAll('li', {'class': 'col-xs-6 col-sm-4 col-md-3 col-lg-3'})
                 for li in liste:
-                    a2 = li.find('a')
-                    x2 = a2["href"]
-                    x2 = re.sub('[..]', '', x2)
-                    y2 = x2[2:]
-                    link2 = y2[:-4]
+                    a = li.find('a')
+                    resultatbrut = a["href"]
+                    resultatbrut = re.sub('[..]', '', resultatbrut)
+                    resultatpropre = resultatbrut[2:]
+                    link2 = resultatpropre[:-4]
                     links.append('https://books.toscrape.com/catalogue/' + link2 + '.html')
             print("")
             print('il y a : ' + str(len(links)) + ' livres au total sur le site.')
@@ -130,61 +130,59 @@ def recherche_categorie(liens, cat):
         else:
             soup = BeautifulSoup(response.text, 'html.parser')
             liste = soup.findAll('li', {'class': 'col-xs-6 col-sm-4 col-md-3 col-lg-3'})
-            nomberBooks = soup.find('form', {'class': 'form-horizontal'}).find('strong').text
-            if int(nomberBooks) > 20:
+            nomberbooks = soup.find('form', {'class': 'form-horizontal'}).find('strong').text
+            if int(nomberbooks) > 20:
                 pages = soup.find('li', {'class': 'next'}).find('a')
                 pages2 = pages['href']
-                pageNext = url[:-10]
-                liens = (pageNext + pages2)
+                pagenext = url[:-10]
+                liens = (pagenext + pages2)
                 reponses = requests.get(liens)
                 soups = BeautifulSoup(reponses.text, 'html.parser')
-            # rajout du code pageNext -------------------------------------------
                 page = soup.find('li', {'class': 'next'}).find('a')
-                nombrePage = soup.find('li', {'class': 'current'}).text
-                pageSansEspace = nombrePage.strip()
-                totalPage = pageSansEspace[10:]
-                pageTotal = int(totalPage) -2
-                urlPageNext = page['href']
-                newUrl2 = newUrls[:-10]
+                nombrepage = soup.find('li', {'class': 'current'}).text
+                pagesansespace = nombrepage.strip()
+                totalpage = pagesansespace[10:]
+                pagetotal = int(totalpage) -2
+                urlpagenext = page['href']
+                newurl2 = newurls[:-10]
                 link = []
-                link.append(newUrls)
-                link.append(newUrl2 + urlPageNext)
-                for i in range(pageTotal):
-                    newUrl = newUrl2 + urlPageNext
-                    newResponse = requests.get(newUrl)
-                    soups = BeautifulSoup(newResponse.text, "html.parser")
+                link.append(newurls)
+                link.append(newurl2 + urlpagenext)
+                for i in range(pagetotal):
+                    newurl = newurl2 + urlpagenext
+                    newresponse = requests.get(newurl)
+                    soups = BeautifulSoup(newresponse.text, "html.parser")
                     pages = soups.find('li', {'class': 'next'}).find('a')
-                    urlPageNext = pages['href']
-                    newUrl = newUrl2 + urlPageNext
-                    link.append(newUrl)
+                    urlpagenext = pages['href']
+                    newurl = newurl2 + urlpagenext
+                    link.append(newurl)
                 for l in link:
                     r = requests.get(l)
                     s = BeautifulSoup(r.text, "html.parser")
                     liste1 = s.findAll('li', {'class': 'col-xs-6 col-sm-4 col-md-3 col-lg-3'})
                     for li in liste1:
-                        a2 = li.find('a')
-                        x2 = a2["href"]
-                        x2 = re.sub('[..]', '', x2)
-                        y2 = x2[2:]
-                        link2 = y2[:-4]
+                        a = li.find('a')
+                        resultatbrut = a["href"]
+                        resultatbrut = re.sub('[..]', '', resultatbrut)
+                        resultatpropre = resultatbrut[2:]
+                        link2 = resultatpropre[:-4]
                         links.append('https://books.toscrape.com/catalogue' + link2 + '.html')
-                # fin du code rajouter ---------------------------------------------------------
                 print("")
-                print('il y a : ' + str(len(links)) + ' livres dans la selection: '+ retourCategorie)
+                print('il y a : ' + str(len(links)) + ' livres dans la selection: '+ retourcategorie)
             else:
                 for li in liste:
                     a = li.find('a')
-                    x = a["href"]
-                    x = re.sub('[..]', '', x)
-                    y = x[2:]
-                    link = y[:-4]
+                    resultatbrut = a["href"]
+                    resultatbrut = re.sub('[..]', '', resultatbrut)
+                    resultatpropre = resultatbrut[2:]
+                    link = resultatpropre[:-4]
                     links.append('https://books.toscrape.com/catalogue' + link + '.html')
                 print("")
-                print('il y a : ' + str(len(links)) + ' livres dans la selection: '+ retourCategorie)
+                print('il y a : ' + str(len(links)) + ' livres dans la selection: '+ retourcategorie)
     return links
 
 
-# fonction de srappe de la totalite des images et extraites par categorie
+# fonction de srappe de la totalité des images et extraites par categories
 def recherche_totalite_images(links, category):
     del links["Books"]
     del category[0]

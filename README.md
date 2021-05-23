@@ -3,7 +3,7 @@ Application de veille marketing d'une librairie en ligne.
 
 L'application ,en plus de ce fichier README, ce compose de:
 			     - 4 scripts python.
-			     - 1 fichier requirements.txt ( ressources pip nécessaires a installer dans votre environement virtuel ). 
+			     - 1 fichier requirements.txt ( ressources pip nécessaires à installer dans votre environement virtuel ). 
 			     - 1 fichier .gitignore ( sert a exclure les fichiers non pris en charge par git ).
 
 Etape 1 :

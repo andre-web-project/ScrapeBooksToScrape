@@ -1,4 +1,4 @@
-import codecs
+import csv
 
 
 # fonction le creation de fichier csv
@@ -15,30 +15,30 @@ def impression_du_details(valeur):
         u'review rating',
         u'image url'
     ]
-    ligneEntete = ';'.join(entetes) + '\n'
+    ligneentete = ';'.join(entetes) + '\n'
     if int(nombre) == 1:
-        with codecs.open('scrappingBooks' + valeurs[0] + '.csv', 'w', encoding='utf-8') as file:
-            file.write(ligneEntete)
+        with open('scrappingBooks' + valeurs[0] + '.csv', 'w', encoding='utf-8') as file:
+            file.write(ligneentete)
+            writer = csv.writer(file, delimiter=';')
             for row in valeur:
-                ligne = ';'.join(row) + '\n'
-                file.write(ligne)
+                writer.writerow(row)
         print("Le fichier csv a était généré.")
         print("")
     elif 1 < int(nombre) < 900:
-        with codecs.open('scrappingBooks' + valeurs[5] + '.csv', 'w', encoding='utf-8') as file:
-            file.write(ligneEntete)
+        with open('scrappingBooks' + valeurs[5] + '.csv', 'w', newline="", encoding='utf-8') as file:
+            file.write(ligneentete)
+            writer = csv.writer(file, delimiter=';')
             for row in valeur:
-                ligne = ';'.join(row) + '\n'
-                file.write(ligne)
+                writer.writerow(row)
         print("Le fichier csv a était généré.")
         print("")
     else:
         for i in valeur:
             cat = i[5]
-            with codecs.open('scrappingBooks' + cat + '.csv', 'w', encoding='utf-8') as file:
-                file.write(ligneEntete)
+            with open('scrappingBooks' + cat + '.csv', 'w', newline="", encoding='utf-8') as file:
+                file.write(ligneentete)
+                writer = csv.writer(file, delimiter=';')
                 for row in valeur:
-                    ligne = ';'.join(row) + '\n'
-                    file.write(ligne)
+                    writer.writerow(row)
         print("Le fichier csv a était généré.")
         print("")
