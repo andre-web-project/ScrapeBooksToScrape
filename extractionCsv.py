@@ -17,7 +17,7 @@ def impression_du_details(valeur):
     ]
     ligneentete = ';'.join(entetes) + '\n'
     if int(nombre) == 1:
-        with open('scrappingBooks' + valeurs[0] + '.csv', 'w', encoding='utf-8') as file:
+        with open('scrappingBooks' + valeurs[5] + '.csv', 'w', newline="", encoding='utf-8') as file:
             file.write(ligneentete)
             writer = csv.writer(file, delimiter=';')
             for row in valeur:

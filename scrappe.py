@@ -132,12 +132,6 @@ def recherche_categorie(liens, cat):
             liste = soup.findAll('li', {'class': 'col-xs-6 col-sm-4 col-md-3 col-lg-3'})
             nomberbooks = soup.find('form', {'class': 'form-horizontal'}).find('strong').text
             if int(nomberbooks) > 20:
-                pages = soup.find('li', {'class': 'next'}).find('a')
-                pages2 = pages['href']
-                pagenext = url[:-10]
-                liens = (pagenext + pages2)
-                reponses = requests.get(liens)
-                soups = BeautifulSoup(reponses.text, 'html.parser')
                 page = soup.find('li', {'class': 'next'}).find('a')
                 nombrepage = soup.find('li', {'class': 'current'}).text
                 pagesansespace = nombrepage.strip()
@@ -204,3 +198,5 @@ def recherche_totalite_infos(links, category):
         retour = recherche_categorie(link, categorie)
         details = recherche_infos_book(retour)
         impression_du_details(details)
+
+
