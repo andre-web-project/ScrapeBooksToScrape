@@ -10,7 +10,7 @@ def menu_accueil():
     print("")
     print("Tapez 1 : pour extraire toutes les informations d'un livre en rentrant son url.")
     print("Tapez 2 : pour extraire tous les liens et informations des livres d'une catégorie choisi.")
-    print("Tapez 3 : pour extraire la totalité des informations du sites")
+    print("Tapez 3 : pour extraire la totalité des informations du site")
     print("Tapez 4 : pour enregistrer toutes les images de couverture de livres rangés par categorie.")
     print("Tapez 5 : pour fermer l'application.")
     choix = input(":  ")

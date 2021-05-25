@@ -11,17 +11,21 @@ def get_html(source):
 # creation fonction pour l'enregistrement des images
 def enregistrement_des_images(valeurs):
     images = []
+    names = []
     simple = valeurs[0]
     categ = simple[5]
     for i in valeurs:
         image = i[-1]
+        name = i[0]
         images.append(image)
+        names.append(name)
     # creation du dossier pour stocker les images
     if not os.path.exists("imagesCouv" + categ):
         os.makedirs("imagesCouv" + categ)
-    for i, img in enumerate(images):
-        nom = img.split("/")[-1]
+    for i, img in zip(names, images):
+        nom = i + ".jpg"
         dest = os.path.join("imagesCouv" + categ, nom)
+        print(dest)
         if os.path.exists(dest):
             continue
         try:

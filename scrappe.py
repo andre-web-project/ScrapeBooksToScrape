@@ -8,14 +8,16 @@ from extractionCsv import impression_du_details
 # fonction de recherche des elements demander pour chaque livres
 def recherche_infos_book(links):
     valeurs = []
+    nb = 0
+    total = len(links)
     for url in links:
-        urls = url
-        reponse = requests.get(urls)
+        reponse = requests.get(url)
         if reponse.ok:
             soup = BeautifulSoup(reponse.text, "html.parser")
             tds = soup.findAll('td')
             ps = soup.findAll("p")
-            title = soup.find("h1").text
+            titleb = soup.find("h1").text
+            title = titleb.replace(":", " ")
             price_including_taxs = tds[3].text
             price_including_tax = price_including_taxs[1:]
             price_excluding_taxs = tds[2].text
@@ -30,6 +32,8 @@ def recherche_infos_book(links):
             image_url = liensImage
             valeur = [title, price_including_tax, price_excluding_tax, number_available, product_description, category, review_rating, image_url]
             valeurs.append(valeur)
+            nb += 1
+        print(f'{nb}/{total} élément(s) extrait')
     return valeurs
 
 
